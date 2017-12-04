@@ -8,31 +8,6 @@ if (!Drupal.settings.site_path || Drupal.settings.site_path == '') {
   Drupal.settings.site_path = variable_get('nositepath_site_path', nositepath_temp_path);
 }
 
-// Add the menu item. @TODO Should probably happen in nositepath_deviceready().
-nositepath_add_menu_item();
-
-/**
- * Add main_menu item.
- */
-function nositepath_add_menu_item() {
-  // Check to see if it's already been added. @TODO This is a silly hack.
-  for (var i = 0; i < drupalgap.settings.menus['main_menu'].links.length; i++) {
-    if (drupalgap.settings.menus['main_menu'].links[i].path == 'nositepath') {
-      return true;
-    }
-  }
-  // Add the Connection menu item.
-  drupalgap.settings.menus['main_menu'].links.push(
-          {
-            title: 'Connection',
-            path: 'nositepath',
-            options: {
-              attributes: {'data-icon': 'gear'}
-            },
-          }
-  );
-}
-
 /**
  * Implements hook_deviceready().
  */
