@@ -66,22 +66,46 @@ function nositepath_form(form, form_state) {
  */
 function nositepath_form_submit(form, form_state) {
   try {
-    nositepath_reconnect(form_state.values['site_path']);
+    nositepath_reconnect(form_state.values['site_path'], nositepath_alert_success);
   } catch (error) {
     console.log('nositepath_offline_form_submit - ' + error);
   }
 }
 
-function nositepath_reconnect(site_path) {
+/**
+ * Alert the user of the successful connnection.
+ */
+function nositepath_alert_success(message) {
+  alert('Connection successful!');
+}
+
+/**
+ * Connects to the given site path.
+ *
+ * @param site_path
+ *   The full URI of the new site_path.
+ * @param success_callback
+ *   (optional) The function to call after a successful reconnection. Additional
+ *   arguments passed to nositepath_reconnect() will be passed on to
+ *   success_callback.
+ */
+function nositepath_reconnect(site_path, success_callback) {
   try {
     // Set the site_path variables, and save the persistent one.
     Drupal.settings.site_path = site_path;
     drupalgap.settings.site_path = site_path;
+    if (success_callback !== undefined) {
+      // Remove the function name and success_callback from the list of
+      // arguments.
+      var args = Array.prototype.slice.call(arguments).slice(2);
+    }
     // Try to connect, and then bootstrap.
     return system_connect(
             {
               success: function () {
-                alert('Connection successful!');
+                if (success_callback !== undefined) {
+                  success_callback.apply(this, args);
+                }
                 variable_set('nositepath_site_path', site_path);
                 // Re-load. Does this work?
                 drupalgap_onload();
